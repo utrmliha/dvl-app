@@ -9,6 +9,9 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +42,7 @@ public class SkillService implements MxFilterableBeanService<SkillBean, Long> {
 	@Override
 	@GetMapping
 	public Iterable<SkillBean> get(@RequestParam Map<String, String> params) {
-		return repo.firstPage();
+		return repo.firstPage(Sort.by("name"));
 	}
 
 	@Override
@@ -79,12 +82,29 @@ public class SkillService implements MxFilterableBeanService<SkillBean, Long> {
 	}
 
 	@GetMapping("/like")
-	public Iterable<SkillBean> getLike(@RequestParam(required = true) String id) {
-		return repo.findAllLike(id);
+	public Iterable<SkillBean> getLike(@RequestParam(required = true) String nome) {
+		return repo.findAllLike(nome);
 	}
 
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Long id) {
 		repo.deleteById(id);
+	}
+	
+	@GetMapping("/name")
+	public Optional<SkillBean> byname(@RequestParam(value = "name") String nome){
+		//http://localhost:7380/igo/skills/skills/name?name=a
+		Optional<SkillBean> skill = repo.findByName(nome);
+		return skill;
+	}
+	
+	@GetMapping("/exists/name")
+	public ResponseEntity existbyname(@RequestParam(value = "name") String nome){
+		//http://localhost:7380/igo/skills/skills/name?name=a
+		if(repo.ifExistByName(nome)) {
+			return new ResponseEntity("Usuario"+nome+" existe no banco", HttpStatus.OK);
+		}else {
+			return new ResponseEntity("Usuario"+nome+" Não existe no banco", HttpStatus.NOT_FOUND);
+		}
 	}
 }

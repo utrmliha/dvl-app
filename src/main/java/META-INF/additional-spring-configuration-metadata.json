@@ -18,5 +18,10 @@
     "name": "DVL_IH_LOG",
     "type": "java.lang.String",
     "description": "Log file location"
+  },
+  {
+    "name": "linkedin.name",
+    "type": "java.lang.String",
+    "description": "My linkedin user"
   }
 ]}
